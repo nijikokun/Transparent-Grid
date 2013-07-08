@@ -18,16 +18,16 @@ classes-push       = 'push'
 
 // Grid Mathematics
 element-width(index)
-  if width == 100%
+  if width is 100%
     value = (((100% + gutter) / columns) * index) - gutter
-    return round(value * 100)/100
+    return round(value * 100) / 100
   else
     return (((width + gutter) / columns) * index) - width
 
 column-width()
-  if width == 100%
+  if width is 100%
     value = (((100% + gutter) / columns)) - gutter
-    return (round(value * 100)/100) * 1%
+    return (round(value * 100) / 100) * 1%
   else
     return (width - (gutter * (columns - 1))) / columns
 
@@ -69,7 +69,7 @@ column(columns-width, columns-padding=null)
 column-omega()
 
 push(index)
-  margin-left: (gutter + element-width(index))
+  margin-left: element-width(index) + gutter
 
 generate-helpers()
   .{classes-container}
