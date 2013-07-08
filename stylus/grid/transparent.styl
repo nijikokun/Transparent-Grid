@@ -1,0 +1,113 @@
+// transparent.styl - v1
+// Based on Profound Grid
+// 2013 Nijiko Yonskai <nijikokun@gmail.com>
+
+// Grid supports both fixed, fluid, relative, and fixed gutters.
+// Semantic classes without need for generic `.grid_x` classnames.
+
+columns    = 12
+width      = 960px
+gutter     = 1%
+
+// Container Margin
+margin     = 1%
+
+classes-container  = 'row'
+classes-column     = 'col'
+classes-push       = 'push'
+
+// Grid Mathematics
+element-width(index)
+  if width == 100%
+    value = (((100% + gutter) / columns) * index) - gutter
+    return round(value * 100)/100
+  else
+    return (((width + gutter) / columns) * index) - width
+
+column-width()
+  if width == 100%
+    value = (((100% + gutter) / columns)) - gutter
+    return (round(value * 100)/100) * 1%
+  else
+    return (width - (gutter * (columns - 1))) / columns
+
+container-width()
+  if width == 100%
+    if margin == auto
+      return 100%
+    return 100% - 2 * margin
+  else
+    return width
+
+// Basic Mixins
+clearfix()
+  overflow: hidden
+  *zoom: 1
+
+legacy-clearfix()
+  *zoom: 1
+
+  &:after
+    content: "\0020"
+    display: block
+    height: 0
+    clear: both
+    overflow: hidden
+    visibility: hidden
+
+container()
+  width: container-width()
+  margin: 0 margin
+
+column(columns-width, columns-padding=null)
+  float: left
+  margin-right: -100%
+  width: element-width(columns-width)
+  if columns-padding
+    push(columns-padding)
+
+column-omega()
+
+push(index)
+  margin-left: (gutter + element-width(index))
+
+generate-helpers()
+  .{classes-container}
+    container()
+  for index in (1..columns)
+    .{classes-column}-{index}
+      column(index)
+  for index in (0..columns - 1)
+    .{classes-push}-{index}
+      push(index)
+
+generate-positions(column-selector, element-widths)
+  columns-per-row = floor(columns / element-widths)
+  for index in (1..cols-per-row)
+    {column-selector}:nth-child({columns-per-row}n+{index})
+      push(((index-1) * element-widths))
+      margin-bottom: gutter
+      if index == 1
+        clear: both
+        clearfix()
+      else
+        clear: none
+
+generate-positions-legacy(column-selector, element-widths, elements-in-grid = columns)
+  columns-per-row = floor(columns / element-widths)
+  current-column = 1
+  for index in (0..elements-in-grid)
+    selector = column-selector
+    for indice in (2..index)
+      selector = "{selector}+{column-selector}"
+    {selector}
+      @include push(((current-column-1) * element-widths))
+      margin-bottom: gutter
+      if current-column == 1
+        clear: both
+        legacy-clearfix()
+      else
+        clear: none
+      current-column = current-column + 1
+      if current-column > columns-per-row
+        current-column = 1
